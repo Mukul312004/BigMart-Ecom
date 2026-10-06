@@ -1,299 +1,325 @@
-# Full-Stack E-Commerce Web Application
+# Full-Stack E-Commerce Application
 
-A full-stack e-commerce web application built with a Spring Boot REST API backend and a React (Vite) frontend. The application allows users to browse products, filter by category, search in real-time, view detailed product pages, manage a shopping cart with local persistence, execute multi-item checkouts with automatic stock updates, and perform full CRUD operations with multipart image uploads.
+A full-stack e-commerce web application built with **React, Spring Boot, and H2 Database**.
 
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Project Architecture](#project-architecture)
-- [Directory Structure](#directory-structure)
-- [Prerequisites](#prerequisites)
-- [Installation and Setup](#installation-and-setup)
-  - [Backend Setup (Spring Boot)](#backend-setup-spring-boot)
-  - [Frontend Setup (React + Vite)](#frontend-setup-react--vite)
-- [Database Configuration and H2 Console](#database-configuration-and-h2-console)
-- [REST API Endpoints](#rest-api-endpoints)
-- [Frontend Routes](#frontend-routes)
-- [Configuration and Environment](#configuration-and-environment)
-- [License](#license)
+The application provides a complete product shopping workflow including product browsing, category filtering, real-time search, product management, image uploads, shopping cart management, checkout, and inventory updates.
 
 ---
 
-## Overview
+##  Features
 
-This project is a decoupled e-commerce solution consisting of:
-1. **ecom-project-api**: A Java and Spring Boot REST API that manages products, inventory stock levels, category search, and binary image storage in an in-memory H2 database.
-2. **ecom-frontend**: A single-page application (SPA) built with React 18, Vite, and Bootstrap, featuring dark/light mode, real-time search suggestions, dynamic category filtering, image blob rendering, and responsive shopping cart management.
+###  Product & Shopping Features
+
+- Browse products through a responsive catalog
+- Search products in real time
+- Filter products by category
+- View detailed product information
+- Track product availability and stock
+- Add products to cart
+- Adjust cart quantities
+- Persistent cart using `localStorage`
+- Checkout with automatic inventory updates
+- Light/Dark theme toggle
+
+###  Backend Features
+
+- RESTful API built with Spring Boot
+- Complete product CRUD operations
+- Multipart image upload and storage
+- Product image retrieval
+- Case-insensitive product search
+- Search across:
+  - Product name
+  - Description
+  - Brand
+  - Category
+- Automatic inventory deduction during checkout
+- CORS configuration for frontend integration
+- H2 database with JPA/Hibernate
 
 ---
 
-## Key Features
+##  Architecture
 
-### Backend (Spring Boot REST API)
-- **Product Management (CRUD)**: Create, read, update, and delete product listings.
-- **Multipart Image Handling**: Stores and serves product images directly as binary data (`byte[]` Lob) with corresponding MIME types.
-- **Dynamic Search**: Custom JPQL query allowing case-insensitive multi-field search across product name, description, brand, and category.
-- **Inventory Stock Updates**: Supports real-time stock deductions upon checkout.
-- **CORS Configured**: Pre-configured cross-origin resource sharing to support frontend integration.
-- **In-Memory H2 Database**: Pre-configured with automatic schema updates and H2 web console access.
-
-### Frontend (React + Vite SPA)
-- **Interactive Product Catalog**: Grid-based display of available items with stock status badges.
-- **Category Filtering**: Filter products by categories (Laptop, Headphone, Mobile, Electronics, Toys, Fashion).
-- **Live Search Bar**: As-you-type search queries with responsive dropdown suggestions.
-- **Product Detail View**: Dedicated product page with pricing, brand, category, release date, stock counter, and edit/delete actions.
-- **Multipart Form Uploads**: Add and edit product forms supporting both JSON payloads and file uploads simultaneously.
-- **Shopping Cart**: Client-side cart backed by React Context and `localStorage` persistence.
-- **Checkout Modal**: Order summary popup that updates inventory quantities on the server upon purchase confirmation.
-- **Theme Toggle**: Light and Dark mode toggle with preference stored in `localStorage`.
+```text
+┌──────────────────────────────┐
+│        React Frontend        │
+│        Vite + Bootstrap      │
+│          Port 5173           │
+└──────────────┬───────────────┘
+               │
+               │ HTTP / REST
+               │ JSON + Multipart
+               ▼
+┌──────────────────────────────┐
+│       Spring Boot API        │
+│          Port 8080           │
+│                              │
+│  ProductController           │
+│  ProductService              │
+│  ProductRepository           │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│       H2 Database            │
+│       In-Memory Storage      │
+└──────────────────────────────┘
+```
 
 ---
 
-## Tech Stack
-
-### Backend
-- **Language**: Java 21 / 25
-- **Framework**: Spring Boot 4.1.x
-- **ORM / Persistence**: Spring Data JPA, Hibernate
-- **Database**: H2 In-Memory Database
-- **Tooling**: Project Lombok, Maven Wrapper (`mvnw`)
+##  Tech Stack
 
 ### Frontend
-- **Framework**: React 18
-- **Build Tool**: Vite 5
-- **Routing**: React Router DOM v6
-- **HTTP Client**: Axios
-- **Styling & UI**: Bootstrap 5, React Bootstrap, Bootstrap Icons, Sass
-- **State Management**: React Context API
+
+- React 18
+- Vite
+- React Router DOM
+- Axios
+- Bootstrap 5
+- React Bootstrap
+- Bootstrap Icons
+- Sass
+- React Context API
+- JavaScript
+
+### Backend
+
+- Java
+- Spring Boot
+- Spring Data JPA
+- Hibernate
+- REST APIs
+- Lombok
+- Maven
+
+### Database
+
+- H2 Database
+- In-memory persistence
 
 ---
 
-## Project Architecture
+##  Project Structure
 
-```
-[ Client Browser ]
-       |
-       v
-[ React Frontend (Vite) - Port 5173 ]
-       |
-       |  HTTP / REST (JSON + Multipart)
-       v
-[ Spring Boot API - Port 8080 ]
-  ├── ProductController  (/api/*)
-  ├── ProductService     (Business Logic & File Processing)
-  └── ProductRepo        (Spring Data JPA / JPQL)
-       |
-       v
-[ In-Memory H2 Database ]
-```
-
----
-
-## Directory Structure
-
-```
-Ecom website/
-├── .gitignore
-├── API_DOCUMENTATION.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
+```text
+BigMart-Ecom/
+│
 ├── ecom-frontend/
 │   ├── public/
-│   │   └── vite.svg
-│   ├── src/
-│   │   ├── assets/
-│   │   │   ├── react.svg
-│   │   │   └── unplugged.png
-│   │   ├── components/
-│   │   │   ├── AddProduct.jsx
-│   │   │   ├── Cart.jsx
-│   │   │   ├── CheckoutPopup.jsx
-│   │   │   ├── Home.jsx
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Product.jsx
-│   │   │   └── UpdateProduct.jsx
-│   │   ├── Context/
-│   │   │   └── Context.jsx
-│   │   ├── App.css
-│   │   ├── App.jsx
-│   │   ├── axios.jsx
-│   │   ├── index.css
-│   │   └── main.jsx
-│   ├── .eslintrc.cjs
-│   ├── .gitignore
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-└── ecom-project-api/
-    ├── .mvn/
-    │   └── wrapper/
-    ├── src/
-    │   ├── main/
-    │   │   ├── java/com/mukul/ecom_project/
-    │   │   │   ├── contoller/
-    │   │   │   │   └── ProductController.java
-    │   │   │   ├── model/
-    │   │   │   │   └── Product.java
-    │   │   │   ├── repo/
-    │   │   │   │   └── ProductRepo.java
-    │   │   │   ├── service/
-    │   │   │   │   └── ProductService.java
-    │   │   │   └── EcomProjectApplication.java
-    │   │   └── resources/
-    │   │       └── application.properties
-    │   └── test/
-    │       └── java/com/mukul/ecom_project/
-    │           └── EcomProjectApplicationTests.java
-    ├── .gitattributes
-    ├── .gitignore
-    ├── mvnw
-    ├── mvnw.cmd
-    └── pom.xml
+│   └── src/
+│       ├── components/
+│       │   ├── AddProduct.jsx
+│       │   ├── Cart.jsx
+│       │   ├── CheckoutPopup.jsx
+│       │   ├── Home.jsx
+│       │   ├── Navbar.jsx
+│       │   ├── Product.jsx
+│       │   └── UpdateProduct.jsx
+│       │
+│       ├── Context/
+│       │   └── Context.jsx
+│       │
+│       ├── App.jsx
+│       ├── axios.jsx
+│       └── main.jsx
+│
+├── ecom-project-api/
+│   └── src/
+│       ├── main/
+│       │   ├── java/
+│       │   │   └── com/mukul/ecom_project/
+│       │   │       ├── controller/
+│       │   │       ├── model/
+│       │   │       ├── repo/
+│       │   │       ├── service/
+│       │   │       └── EcomProjectApplication.java
+│       │   │
+│       │   └── resources/
+│       │       └── application.properties
+│       │
+│       └── test/
+│
+├── API_DOCUMENTATION.md
+├── DATABASE_SETUP.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── README.md
 ```
 
 ---
 
-## Prerequisites
+##  Getting Started
 
-Ensure you have the following installed on your system:
+### Prerequisites
 
-- **Java Development Kit (JDK)**: Version 21 or higher (configured in `JAVA_HOME`)
-- **Apache Maven**: Version 3.8+ (optional, Maven wrapper `mvnw` / `mvnw.cmd` is included)
-- **Node.js**: Version 18.x or higher
-- **npm**: Version 9.x or higher
+Make sure you have:
 
----
-
-## Installation and Setup
-
-### Backend Setup (Spring Boot)
-
-1. Open a terminal and navigate to the backend directory:
-   ```bash
-   cd "ecom-project-api"
-   ```
-
-2. Build the application using Maven:
-   - **On Windows**:
-     ```cmd
-     mvnw.cmd clean install
-     ```
-   - **On Linux / macOS**:
-     ```bash
-     ./mvnw clean install
-     ```
-
-3. Run the Spring Boot application:
-   - **On Windows**:
-     ```cmd
-     mvnw.cmd spring-boot:run
-     ```
-   - **On Linux / macOS**:
-     ```bash
-     ./mvnw spring-boot:run
-     ```
-
-4. The backend server will start on `http://localhost:8080`.
+- JDK 21+
+- Node.js 18+
+- npm 9+
+- Maven 3.8+ *(optional — Maven Wrapper is included)*
 
 ---
 
-### Frontend Setup (React + Vite)
+##  Backend Setup
 
-1. Open a separate terminal window and navigate to the frontend directory:
-   ```bash
-   cd "ecom-frontend"
-   ```
+Navigate to the backend:
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open your browser and navigate to `http://localhost:5173` (or the URL displayed in your terminal).
-
----
-
-## Database Configuration and H2 Console
-
-The application is configured to use an in-memory H2 database by default in `ecom-project-api/src/main/resources/application.properties`:
-
-```properties
-spring.application.name=ecom-project
-spring.datasource.url=jdbc:h2:mem:testDB
-spring.datasource.driverClassName=org.h2.Driver
-spring.jpa.show-sql=true
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.defer-datasource-initialization=true
-spring.jackson.deserialization.fail-on-null-for-primitives=false
+```bash
+cd ecom-project-api
 ```
 
-### Accessing H2 Web Console
-- **URL**: `http://localhost:8080/h2-console`
-- **JDBC URL**: `jdbc:h2:mem:testDB`
-- **User Name**: `sa`
-- **Password**: *(leave blank)*
+### Windows
 
-> Note: Because H2 runs in-memory (`mem:testDB`), data is reset each time the backend server restarts. For persistent storage, the datasource URL can be modified to a file-based H2 database or a PostgreSQL/MySQL instance.
+```bash
+mvnw.cmd clean install
+mvnw.cmd spring-boot:run
+```
 
----
+### Linux / macOS
 
-## REST API Endpoints
+```bash
+./mvnw clean install
+./mvnw spring-boot:run
+```
 
-Base URL: `http://localhost:8080/api`
+The backend will run on:
 
-| HTTP Method | Endpoint | Description | Content-Type |
-|---|---|---|---|
-| `GET` | `/api/products` | Retrieve list of all products | `application/json` |
-| `GET` | `/api/product/{id}` | Retrieve single product details by ID | `application/json` |
-| `POST` | `/api/product` | Add a new product with an image file | `multipart/form-data` |
-| `GET` | `/api/product/{productId}/image` | Retrieve product image binary | `image/jpeg`, `image/png`, etc. |
-| `PUT` | `/api/product/{id}` | Update existing product details and image | `multipart/form-data` |
-| `DELETE` | `/api/product/{id}` | Delete a product by ID | `text/plain` |
-| `GET` | `/api/products/search?keyword={keyword}` | Search products across name, brand, description, category | `application/json` |
-
-For full payload schemas, request headers, and example curl commands, refer to [API_DOCUMENTATION.md](./API_DOCUMENTATION.md).
+```text
+http://localhost:8080
+```
 
 ---
 
-## Frontend Routes
+##  Frontend Setup
 
-| Route Path | Component | Description |
-|---|---|---|
-| `/` | `Home` | Product catalog with category filter, search integration, and cart quick-add |
-| `/product/:id` | `Product` | Single product detail view, image display, stock info, edit/delete actions |
-| `/add_product` | `AddProduct` | Product creation form with file upload |
-| `/product/update/:id` | `UpdateProduct` | Product update form with file replacement |
-| `/cart` | `Cart` | Shopping cart review, quantity adjustment, and checkout modal |
+Open another terminal:
 
----
-
-## Configuration and Environment
-
-### Changing Backend Port / Target
-If running the backend on a port other than `8080`:
-- Update `server.port` in `ecom-project-api/src/main/resources/application.properties`.
-- Update `baseURL` in `ecom-frontend/src/axios.jsx` and the endpoints in `Navbar.jsx`, `Home.jsx`, `Product.jsx`, `AddProduct.jsx`, `UpdateProduct.jsx`, and `Cart.jsx`.
-
-### Production Build
-To create an optimized production build of the frontend:
 ```bash
 cd ecom-frontend
-npm run build
+npm install
+npm run dev
 ```
-The compiled static assets will be output to the `ecom-frontend/dist` directory.
+
+The frontend will run on:
+
+```text
+http://localhost:5173
+```
 
 ---
 
-## License
+##  Database
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for full license text.
+The project uses an **in-memory H2 database**.
+
+Default configuration:
+
+```properties
+spring.datasource.url=jdbc:h2:mem:testDB
+spring.datasource.driverClassName=org.h2.Driver
+spring.jpa.hibernate.ddl-auto=update
+```
+
+### H2 Console
+
+Once the backend is running, open:
+
+```text
+http://localhost:8080/h2-console
+```
+
+Use:
+
+```text
+JDBC URL: jdbc:h2:mem:testDB
+Username: sa
+Password: [leave blank]
+```
+
+> Since the database is in-memory, data is reset when the backend application restarts.
+
+---
+
+##  REST API
+
+Base URL:
+
+```text
+http://localhost:8080/api
+```
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/products` | Get all products |
+| GET | `/product/{id}` | Get product by ID |
+| POST | `/product` | Create a product |
+| PUT | `/product/{id}` | Update a product |
+| DELETE | `/product/{id}` | Delete a product |
+| GET | `/product/{id}/image` | Retrieve product image |
+| GET | `/products/search?keyword={keyword}` | Search products |
+
+For complete request/response details, see [`API_DOCUMENTATION.md`](API_DOCUMENTATION.md).
+
+---
+
+##  Application Routes
+
+| Route | Purpose |
+|---|---|
+| `/` | Product catalog |
+| `/product/:id` | Product details |
+| `/add_product` | Add product |
+| `/product/update/:id` | Update product |
+| `/cart` | Shopping cart and checkout |
+
+---
+
+##  Application Flow
+
+```text
+User
+ │
+ ▼
+React Frontend
+ │
+ │ REST API
+ ▼
+Spring Boot Backend
+ │
+ ├── Product Management
+ ├── Search
+ ├── Image Processing
+ └── Inventory Updates
+ │
+ ▼
+H2 Database
+```
+
+During checkout, the backend updates the available inventory based on the purchased quantities.
+
+---
+
+##  Project Status
+
+**Completed**
+
+This project was built to gain practical experience with:
+
+- Full-stack application architecture
+- React frontend development
+- Spring Boot REST API development
+- JPA/Hibernate
+- Database integration
+- File uploads
+- API integration
+- State management
+- Inventory management
+
+---
+
+##  License
+
+This project is licensed under the **MIT License**.
